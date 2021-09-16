@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import Characters from "./components/Characters";
+import "./App.css";
 
 function App() {
+  const [characterList, setCharacterList] = useState([]);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    fetch(`https://rickandmortyapi.com/api/character?page=${page}`)
+      .then((response) => response.json())
+      .then((response) => setCharacterList(response.results))
+      .catch((err) => console.log(err));
+  }, [page]);
+
+  const nextPage = () => {
+    if (page < 34) {
+      setPage(page + 1);
+    }
+  };
+
+  const previousPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Characters characterList={characterList} />
+      <div className="btnContainer">
+        <button className="btnPrev" onClick={() => previousPage()}>
+          Previous
+        </button>
+        <button className="btnNext" onClick={() => nextPage()}>
+          Next
+        </button>
+      </div>
     </div>
   );
 }
